@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . '/../admin/src/php/db/db_pg_connect.php';
 require_once __DIR__ . '/../admin/src/php/classes/Boisson.class.php';
 require_once __DIR__ . '/../admin/src/php/classes/BoissonDAO.class.php';
@@ -23,14 +22,87 @@ if (isset($_SESSION['user_id'])) {
 }
 ?>
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nos Boissons</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+    background: linear-gradient(135deg, #ffe259, #ffa751);
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+}
+
+h2, h3 {
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+.card {
+    border-radius: 15px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    background: #fff;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.card-title {
+    color: #ff6f61;
+    font-weight: 600;
+}
+
+.card-text.text-muted {
+    color: #6c757d !important;
+}
+
+.btn-success {
+    background-color: #28c76f;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.btn-success:hover {
+    background-color: #20b358;
+}
+
+.btn-outline-primary {
+    border-color: #ff6f61;
+    color: #ff6f61;
+}
+
+.btn-outline-primary:hover {
+    background-color: #ff6f61;
+    color: #fff;
+}
+
+.form-select {
+    border-radius: 50px;
+}
+
+.list-group-item {
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: rgba(255,255,255,0.85);
+}
+</style>
+</head>
+<body>
+
 <div class="container mt-4">
     <h2 class="text-center mb-4">Nos Boissons</h2>
 
     <!-- Formulaire de filtrage -->
     <form method="get" action="index.php" class="mb-4">
         <input type="hidden" name="page" value="accueil">
-        <div class="row">
-            <div class="col-md-4 offset-md-4">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
                 <select name="marque" class="form-select" onchange="this.form.submit()">
                     <option value="">-- Toutes les marques --</option>
                     <?php
@@ -120,6 +192,10 @@ if (isset($_SESSION['user_id'])) {
             <?php endforeach; ?>
         </div>
     <?php else: ?>
-        <p class="text-center">Aucune commande passée pour le moment.</p>
+        <p class="text-center text-white">Aucune commande passée pour le moment.</p>
     <?php endif; ?>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
