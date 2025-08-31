@@ -41,6 +41,8 @@ Le projet utilise :
 
 PHP pour le backend
 
+Ajax pour la partie panier ( + et - des quantités )
+
 PostgreSQL pour la base de données
 
 Bootstrap pour le design
