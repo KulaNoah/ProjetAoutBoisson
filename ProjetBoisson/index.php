@@ -27,6 +27,7 @@ if (isset($_POST['add_to_cart'])) {
         $_SESSION['cart'][] = $item;
     }
 }
+
 // Augmenter la quantité
 if (isset($_POST['increase'])) {
     $index = $_POST['increase'];
@@ -50,6 +51,7 @@ if (isset($_POST['remove'])) {
     unset($_SESSION['cart'][$index]);
     $_SESSION['cart'] = array_values($_SESSION['cart']);
 }
+
 // Vider le panier
 if (isset($_POST['clear_cart'])) {
     $_SESSION['cart'] = [];
@@ -66,26 +68,36 @@ if (isset($_POST['checkout'])) {
             $db = new PDO("pgsql:host=localhost;dbname=projet_boissons;port=5432", "postgres", "admin");
             $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            // Insérer la commande
-            $stmt = $db->prepare("INSERT INTO commandes (user_id, total, date_commande) VALUES (:user_id, :total, NOW()) RETURNING id");
+            // Calculer le total
             $total = 0;
             foreach ($_SESSION['cart'] as $item) {
                 $total += $item['prix'] * $item['quantite'];
             }
+
+            // Insérer la commande
+            $stmt = $db->prepare("INSERT INTO commandes (user_id, total, date_commande) VALUES (:user_id, :total, NOW()) RETURNING id");
             $stmt->execute([
                 ':user_id' => $_SESSION['user_id'],
                 ':total' => $total
             ]);
             $order_id = $stmt->fetchColumn();
 
-            // Insérer les détails de commande
+            // Insérer les détails de commande et mettre à jour les quantités
             $stmtDetail = $db->prepare("INSERT INTO commande_details (commande_id, boisson_id, quantite, prix) VALUES (:commande_id, :boisson_id, :quantite, :prix)");
+            $stmtStock  = $db->prepare("UPDATE boissons SET quantite = quantite - :qte WHERE id = :id");
+
             foreach ($_SESSION['cart'] as $item) {
                 $stmtDetail->execute([
                     ':commande_id' => $order_id,
-                    ':boisson_id' => $item['id'],
-                    ':quantite' => $item['quantite'],
-                    ':prix' => $item['prix']
+                    ':boisson_id'  => $item['id'],
+                    ':quantite'    => $item['quantite'],
+                    ':prix'        => $item['prix']
+                ]);
+
+                // Mettre à jour la quantité en base
+                $stmtStock->execute([
+                    ':qte' => $item['quantite'],
+                    ':id'  => $item['id']
                 ]);
             }
 
@@ -98,11 +110,6 @@ if (isset($_POST['checkout'])) {
         }
     }
 }
-
-
-
-
-
 
 // Page par défaut
 if (!isset($_SESSION['page'])) {
@@ -137,7 +144,7 @@ $path = __DIR__ . '/content/' . $_SESSION['page'];
                     <li class="nav-item">
                         <a class="nav-link" href="index.php?page=accueil">Accueil</a>
                     </li>
-                    
+
                     <?php if (!isset($_SESSION['user'])): ?>
                         <li class="nav-item">
                             <a class="nav-link" href="index.php?page=login">Connexion</a>
@@ -171,10 +178,8 @@ $path = __DIR__ . '/content/' . $_SESSION['page'];
     </nav>
 </header>
 
-
 <main class="container">
 <?php
-// Inclusion de la page demandée si elle existe
 if (file_exists($path)) {
     include $path;
 } else {

@@ -29,11 +29,17 @@ $message = '';
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $nom = trim($_POST['nom']);
     $prix = trim($_POST['prix']);
+    $quantite = trim($_POST['quantite']); // Nouveau champ
 
-    if ($nom && $prix) {
+    if ($nom && $prix !== '' && $quantite !== '') {
         try {
-            $stmt = $db->prepare("UPDATE boissons SET nom = :nom, prix = :prix WHERE id = :id");
-            $stmt->execute([':nom' => $nom, ':prix' => $prix, ':id' => $id]);
+            $stmt = $db->prepare("UPDATE boissons SET nom = :nom, prix = :prix, quantite = :quantite WHERE id = :id");
+            $stmt->execute([
+                ':nom' => $nom,
+                ':prix' => $prix,
+                ':quantite' => $quantite,
+                ':id' => $id
+            ]);
 
             header("Location: index.php?page=dashboard&msg=Boisson+modifiée+avec+succès");
             exit();
@@ -70,6 +76,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div class="mb-3">
             <label for="prix" class="form-label">Prix (€)</label>
             <input type="number" step="0.01" name="prix" id="prix" class="form-control" value="<?= htmlspecialchars($boisson['prix']) ?>" required>
+        </div>
+        <div class="mb-3">
+            <label for="quantite" class="form-label">Quantité en stock</label>
+            <input type="number" name="quantite" id="quantite" class="form-control" value="<?= htmlspecialchars($boisson['quantite']) ?>" min="0" required>
         </div>
         <button type="submit" class="btn btn-primary">Enregistrer</button>
         <a href="index.php?page=dashboard" class="btn btn-secondary">Annuler</a>

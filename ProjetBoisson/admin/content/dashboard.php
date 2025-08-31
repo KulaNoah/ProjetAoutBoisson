@@ -47,28 +47,31 @@ $boissons = $stmt->fetchAll();
     <a href="index.php?page=add" class="btn btn-success mb-3">➕ Ajouter une boisson</a>
 
     <table class="table table-striped table-bordered table-hover align-middle">
-        <thead class="table-dark">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Prix</th>
+            <th>Quantité</th> <!-- Nouvelle colonne -->
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($boissons as $b): ?>
             <tr>
-                <th>ID</th>
-                <th>Nom</th>
-                <th>Prix</th>
-                <th>Actions</th>
+                <td><?= htmlspecialchars($b['id']) ?></td>
+                <td><?= htmlspecialchars($b['nom']) ?></td>
+                <td><?= htmlspecialchars($b['prix']) ?> €</td>
+                <td><?= htmlspecialchars($b['quantite']) ?></td> <!-- Affichage de la quantité -->
+                <td>
+                    <a href="index.php?page=edit&id=<?= $b['id'] ?>" class="btn btn-sm btn-primary">✏ Modifier</a>
+                    <a href="index.php?page=delete&id=<?= $b['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cette boisson ?')">🗑 Supprimer</a>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($boissons as $b): ?>
-                <tr>
-                    <td><?= htmlspecialchars($b['id']) ?></td>
-                    <td><?= htmlspecialchars($b['nom']) ?></td>
-                    <td><?= htmlspecialchars($b['prix']) ?> €</td>
-                    <td>
-                        <a href="index.php?page=edit&id=<?= $b['id'] ?>" class="btn btn-sm btn-primary">✏ Modifier</a>
-                        <a href="index.php?page=delete&id=<?= $b['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cette boisson ?')">🗑 Supprimer</a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
 </div>
 
 </body>
